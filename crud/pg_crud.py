@@ -114,3 +114,16 @@ def get_medical_history(db: Session, patient_id: int):
     if not histories:
         raise HTTPException(status_code=404, detail=f"No medical history found for patient ID {patient_id}")
     return histories
+
+def update_medical_history(db: Session, history_id: int, data: dict):
+    """Update a medical history record."""
+    history = db.query(MedicalHistory).filter(MedicalHistory.history_id == history_id).first()
+    if not history:
+        raise HTTPException(status_code=404, detail=f"Medical history with ID {history_id} not found")  
+    for key, value in data.items():
+        if hasattr(history, key):
+            setattr(history, key, value)    
+    db.commit()
+    db.refresh(history)
+    return history
+
