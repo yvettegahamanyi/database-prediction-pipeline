@@ -6,7 +6,7 @@ from model.pipeline import build_pipeline, save_model, prepare_features
 
 print("Starting training...")
 
-# Step 1: Pull and join data
+# === 1. PULL DATA FROM DB ===
 query = """
 SELECT 
     p.sex, p.age, p.education, p.income,
@@ -24,12 +24,12 @@ print("Fetching data from database...")
 df = pd.read_sql(query, engine)
 
 if df.empty:
-    print("No data found!")
+    print("No data found! Add rows to the tables first.")
     exit()
 
 print(f"Loaded {len(df)} samples")
 
-# Step 2: Rename to match model (uppercase)
+# === 2. RENAME COLUMNS ===
 df = df.rename(columns={
     'heart_disease_or_attack': 'HeartDiseaseorAttack',
     'high_bp': 'HighBP',
@@ -54,17 +54,24 @@ df = df.rename(columns={
     'income': 'Income'
 })
 
-# Step 3: Prepare features
-X = prepare_features(df.drop(columns=['HeartDiseaseorAttack']))
+print("Columns after rename:", df.columns.tolist())
+
+# === 3. CLEAN DATA: Remove rows where target is NaN ===
+print(f"Before cleaning: {len(df)} samples")
+df = df.dropna(subset=['HeartDiseaseorAttack'])
+print(f"After cleaning: {len(df)} samples")
+
+# === 4. PREPARE X AND y ===
+X = prepare_features(df.drop(columns=['HeartDiseaseorAttack'], errors='ignore'))
 y = df['HeartDiseaseorAttack']
 
 print(f"Training on {X.shape[1]} features")
 print(f"Class balance:\n{y.value_counts(normalize=True)}")
 
-# Step 4: Train
+# === 5. TRAIN MODEL ===
 pipeline = build_pipeline()
 pipeline.fit(X, y)
 
-# Step 5: Save
+# === 6. SAVE MODEL ===
 save_model(pipeline)
-print("Training complete! Model ready at model/logreg_model.joblib")
+print("Training complete! Model saved at model/logreg_model.joblib")
