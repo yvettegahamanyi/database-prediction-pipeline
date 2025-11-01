@@ -1,9 +1,8 @@
-# create_predictions_table.py
-from database import engine
-from models import Prediction
+# create_predictions.py
+from crud.db.connection import engine
 from sqlalchemy import text
 
-with engine.connect() as conn:
+with engine.begin() as conn:
     conn.execute(text("""
         CREATE TABLE IF NOT EXISTS predictions (
             id SERIAL PRIMARY KEY,
@@ -13,5 +12,4 @@ with engine.connect() as conn:
             created_at TIMESTAMP DEFAULT NOW()
         )
     """))
-    conn.commit()
 print("predictions table ready")
