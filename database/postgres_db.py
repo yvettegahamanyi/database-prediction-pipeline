@@ -1,21 +1,26 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
+# crud/db/connection.py
 import os
+from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
 
-load_dotenv()  # Load .env file
+load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = (
+    f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}"
+    f"@{os.getenv('POSTGRES_HOST')}:{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
+)
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+engine = create_engine(DATABASE_URL, echo=False)
 
-# Dependency for routes
-def get_db():
-    db = SessionLocal()
+def test_connection():
     try:
-        yield db
-    finally:
-        db.close()
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT 1"))
+            print("DB Connected!")
+            return True
+    except Exception as e:
+        print(f"Connection failed: {e}")
+        return False
+
+if __name__ == "__main__":
+    test_connection()
