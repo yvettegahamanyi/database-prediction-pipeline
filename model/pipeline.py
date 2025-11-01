@@ -35,5 +35,10 @@ def save_model(model):
 
 def load_model():
     if not os.path.exists(MODEL_PATH):
-        raise FileNotFoundError(f"Model not found: {MODEL_PATH}")
+        raise FileNotFoundError(f"Model not found: {MODEL_PATH}. Train first.")
     return joblib.load(MODEL_PATH)
+
+# THIS IS THE FUNCTION WE NEED
+def prepare_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Reorder and return only the 20 features in correct order."""
+    return df[FEATURE_ORDER].copy()
