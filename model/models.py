@@ -1,14 +1,15 @@
 # models.py
 from sqlalchemy import Column, Integer, Float, ForeignKey, DateTime, func
-from database import Base
+from database.postgres_db import Base
 
 class Patient(Base):
     __tablename__ = "patients"
     patient_id = Column(Integer, primary_key=True)
-    sex = Column(Integer)
-    age = Column(Integer)
-    education = Column(Integer)
-    income = Column(Integer)
+    sex = Column(Float)
+    age = Column(Float)
+    education = Column(Float)
+    income = Column(Float)
+    bmi = Column(Float)
 
 class HealthIndicator(Base):
     __tablename__ = "health_indicators"

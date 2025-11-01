@@ -1,8 +1,8 @@
 # routes/predict.py
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from database import get_db
-from models import Patient, HealthIndicator, MedicalHistory, Prediction
+from database.postgres_db import get_db
+from model.models import Patient, HealthIndicator, MedicalHistory, Prediction
 from schemas.predict import PredictRequest, PredictResponse
 from model.pipeline import load_model, prepare_features
 import pandas as pd
@@ -11,6 +11,7 @@ router = APIRouter(prefix="/predict", tags=["Prediction"])
 
 # Load model once
 model = load_model()
+
 
 @router.post("/", response_model=PredictResponse)
 def predict_heart_disease(
@@ -23,11 +24,15 @@ def predict_heart_disease(
     db.flush()  # Get patient_id
 
     # 2. Save health indicators
-    hi = HealthIndicator(patient_id=patient.patient_id, **request.health.dict())
+    hi = HealthIndicator(
+        patient_id=patient.patient_id, **request.health.dict()
+    )
     db.add(hi)
 
     # 3. Save medical history
-    mh = MedicalHistory(patient_id=patient.patient_id, **request.medical.dict())
+    mh = MedicalHistory(
+        patient_id=patient.patient_id, **request.medical.dict()
+    )
     db.add(mh)
 
     # 4. Prepare feature vector

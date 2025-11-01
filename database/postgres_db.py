@@ -1,6 +1,7 @@
 # crud/db/connection.py
 import os
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm import Session, declarative_base
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,6 +12,14 @@ DATABASE_URL = (
 )
 
 engine = create_engine(DATABASE_URL, echo=False)
+Base = declarative_base()
+
+def get_db():
+    db = Session(engine)
+    try:
+        yield db
+    finally:
+        db.close()
 
 def test_connection():
     try:

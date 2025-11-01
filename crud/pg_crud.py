@@ -1,15 +1,41 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from .. import models
+from model.models import Patient, HealthIndicator
+
+# add apis for patients
+def create_patient(db: Session, data: dict):
+    """Create a patient record."""
+    patient = Patient(**data)
+    db.add(patient)
+    db.commit()
+    db.refresh(patient)
+    return patient
+    
+def get_patient(db: Session, patient_id: int):
+    """Get a patient record."""
+    return db.query(Patient).filter(Patient.patient_id == patient_id).first()
+    
+def update_patient(db: Session, patient_id: int, data: dict):
+    """Update a patient record."""
+    patient = db.query(Patient).filter(Patient.patient_id == patient_id).first()
+    if not patient:
+        raise HTTPException(status_code=404, detail=f"Patient with ID {patient_id} not found")
+    for key, value in data.items():
+        if hasattr(patient, key):
+            setattr(patient, key, value)
+    db.commit()
+    db.refresh(patient)
+    return patient
+
 
 def create_health_indicator(db: Session, patient_id: int, data: dict):
     """Create a health indicator for a given patient."""
     # Check if patient exists
-    patient = db.query(models.Patient).filter(models.Patient.patient_id == patient_id).first()
+    patient = db.query(Patient).filter(Patient.patient_id == patient_id).first()
     if not patient:
         raise HTTPException(status_code=404, detail=f"Patient with ID {patient_id} not found")
 
-    health_indicator = models.HealthIndicator(
+    health_indicator = HealthIndicator(
         patient_id=patient_id,
         bmi=data.get("bmi"),
         smoker=data.get("smoker"),
@@ -27,7 +53,7 @@ def create_health_indicator(db: Session, patient_id: int, data: dict):
 
 def get_health_indicators(db: Session, patient_id: int):
     """Retrieve all health indicators for a given patient."""
-    indicators = db.query(models.HealthIndicator).filter(models.HealthIndicator.patient_id == patient_id).all()
+    indicators = db.query(HealthIndicator).filter(HealthIndicator.patient_id == patient_id).all()
     if not indicators:
         raise HTTPException(status_code=404, detail=f"No health indicators found for patient ID {patient_id}")
     return indicators
@@ -35,7 +61,7 @@ def get_health_indicators(db: Session, patient_id: int):
 
 def update_health_indicator(db: Session, indicator_id: int, data: dict):
     """Update a health indicator record."""
-    indicator = db.query(models.HealthIndicator).filter(models.HealthIndicator.indicator_id == indicator_id).first()
+    indicator = db.query(HealthIndicator).filter(HealthIndicator.indicator_id == indicator_id).first()
     if not indicator:
         raise HTTPException(status_code=404, detail=f"Health indicator with ID {indicator_id} not found")
 
@@ -50,7 +76,7 @@ def update_health_indicator(db: Session, indicator_id: int, data: dict):
 
 def delete_health_indicator(db: Session, indicator_id: int):
     """Delete a health indicator record."""
-    indicator = db.query(models.HealthIndicator).filter(models.HealthIndicator.indicator_id == indicator_id).first()
+    indicator = db.query(HealthIndicator).filter(HealthIndicator.indicator_id == indicator_id).first()
     if not indicator:
         raise HTTPException(status_code=404, detail=f"Health indicator with ID {indicator_id} not found")
 
