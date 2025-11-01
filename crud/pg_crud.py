@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from model.models import Patient, HealthIndicator
+from model.models import Patient, HealthIndicator, MedicalHistory
 
 # add apis for patients
 def create_patient(db: Session, data: dict):
@@ -127,3 +127,12 @@ def update_medical_history(db: Session, history_id: int, data: dict):
     db.refresh(history)
     return history
 
+
+def delete_medical_history(db: Session, history_id: int):
+    """Delete a medical history record."""
+    history = db.query(MedicalHistory).filter(MedicalHistory.history_id == history_id).first()
+    if not history:
+        raise HTTPException(status_code=404, detail=f"Medical history with ID {history_id} not found")  
+    db.delete(history)
+    db.commit()
+    return {"message": f"Medical history ID {history_id} deleted successfully"}
