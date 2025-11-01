@@ -2,6 +2,7 @@
 from pydantic import BaseModel, field_validator
 
 
+
 class HealthIndicatorBase(BaseModel):
     smoker: float
     phys_activity: float

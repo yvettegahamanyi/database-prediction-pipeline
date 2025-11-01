@@ -3,7 +3,6 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from bson import ObjectId
 
-
 # Helper to convert ObjectId -> string
 class PyObjectId(ObjectId):
     @classmethod

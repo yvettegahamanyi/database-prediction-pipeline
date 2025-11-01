@@ -36,5 +36,5 @@ class PredictRequest(BaseModel):
 class PredictResponse(BaseModel):
     patient_id: int
     probability: float
-    prediction: int  # 0 or 1
+    prediction: int
     message: str = "Prediction saved"
