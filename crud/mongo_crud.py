@@ -63,6 +63,9 @@ def create_medical_history(history: dict):
 def get_medical_history(history_id: str):
     return medical_history_collection.find_one({"_id": ObjectId(history_id)})
 
+def get_all_medical_histories():
+    return list(medical_history_collection.find())
+
 def update_medical_history(history_id: str, update_data: dict):
     medical_history_collection.update_one(
         {"_id": ObjectId(history_id)}, {"$set": update_data}

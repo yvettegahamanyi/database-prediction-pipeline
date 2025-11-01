@@ -9,11 +9,17 @@ from crud.pg_crud import (
     get_health_indicators as get_indicators_crud,
     update_health_indicator as update_indicator_crud,
     delete_health_indicator as delete_indicator_crud,
+    create_medical_history as create_medical_history_crud,
+    get_medical_history as get_medical_history_crud,
+    get_all_medical_histories as get_all_medical_histories_crud,
+    update_medical_history as update_medical_history_crud,
+    delete_medical_history as delete_medical_history_crud,
 )
 from schemas.health_indicator_schema import (
     HealthIndicatorBase,
 )
 from schemas.patient_schema import PatientBase
+from schemas.medical_history_schema import MedicalHistoryBase
 
 router = APIRouter(prefix="/pg", tags=["PostgreSQL CRUD"])
 
@@ -80,10 +86,10 @@ async def delete_health_indicator(
 
 # medical history endpoints
 
-@router.post("/medical-history/{patient_id}")
+@router.post("/medical-history")
 async def create_medical_history(   
     patient_id: int,
-    data: dict,
+    data: MedicalHistoryBase,
     db: Session = Depends(get_db),
 ):
     """Create a medical history for a patient."""
