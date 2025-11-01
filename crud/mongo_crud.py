@@ -5,7 +5,7 @@ from database.mongo_db import (
 from bson import ObjectId
 
 
-# 🧍 Patients CRUD
+#  Patients CRUD
 def create_patient(patient: dict):
     result = patients_collection.insert_one(patient)
     return str(result.inserted_id)
@@ -31,7 +31,7 @@ def delete_patient(patient_id: str):
     return True
 
 
-# 🧾 HealthIndicators CRUD
+#  HealthIndicators CRUD
 def create_health_indicator(indicator: dict):
     result = health_indicators_collection.insert_one(indicator)
     return str(result.inserted_id)
@@ -53,3 +53,10 @@ def update_health_indicator(indicator_id: str, update_data: dict):
 def delete_health_indicator(indicator_id: str):
     health_indicators_collection.delete_one({"_id": ObjectId(indicator_id)})
     return True
+
+# MedicalHistory CRUD
+
+def create_medical_history(history: dict):
+    result = medical_history_collection.insert_one(history)
+    return str(result.inserted_id)  
+
