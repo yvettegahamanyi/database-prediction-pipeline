@@ -1,6 +1,7 @@
 # schemas/health_indicator_schema.py
 from pydantic import BaseModel, validator
 
+
 class HealthIndicatorBase(BaseModel):
     smoker: float
     phys_activity: float
