@@ -83,3 +83,27 @@ def delete_health_indicator(db: Session, indicator_id: int):
     db.delete(indicator)
     db.commit()
     return {"message": f"Health indicator ID {indicator_id} deleted successfully"}
+
+
+# add apis for medical history
+def create_medical_history(db: Session, patient_id: int, data: dict):  
+    """Create a medical history for a given patient."""
+    # Check if patient exists
+    patient = db.query(Patient).filter(Patient.patient_id == patient_id).first()
+    if not patient:
+        raise HTTPException(status_code=404, detail=f"Patient with ID {patient_id} not found")
+
+    medical_history = MedicalHistory(
+        patient_id=patient_id,
+        high_bp=data.get("high_bp"),
+        high_chol=data.get("high_chol"),
+        stroke=data.get("stroke"),
+        heart_disease=data.get("heart_disease"),
+        diabetes=data.get("diabetes")
+    )
+
+    db.add(medical_history)
+    db.commit()
+    db.refresh(medical_history)
+    return medical_history
+
