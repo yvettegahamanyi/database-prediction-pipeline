@@ -85,7 +85,7 @@ def delete_health_indicator(db: Session, indicator_id: int):
     return {"message": f"Health indicator ID {indicator_id} deleted successfully"}
 
 
-# add apis for medical history
+#  Medical History CRUD operations
 def create_medical_history(db: Session, patient_id: int, data: dict):  
     """Create a medical history for a given patient."""
     # Check if patient exists
