@@ -1,5 +1,5 @@
 # create_predictions.py
-from database import engine  # Your root database.py
+from database.postgres_db import engine
 from sqlalchemy import text
 
 print("Creating 'predictions' table...")

@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException
 from schemas.predict import PredictRequest, PredictResponse
 from model.pipeline import load_model  # Only load_model
-from database import engine
+from database.postgres_db import engine
 from sqlalchemy import text
 import pandas as pd
 

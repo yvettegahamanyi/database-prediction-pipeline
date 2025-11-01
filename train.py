@@ -1,7 +1,7 @@
 # train.py
 import pandas as pd
 from sqlalchemy import text
-from database import engine
+from database.postgres_db import engine
 from model.pipeline import build_pipeline, save_model, prepare_features
 
 print("Starting training...")
