@@ -1,5 +1,8 @@
 # routes/predict.py
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from database.postgres_db import get_db
+from model.models import Patient, HealthIndicator, MedicalHistory, Prediction
 from schemas.predict import PredictRequest, PredictResponse
 from model.pipeline import load_model  # Only load_model
 from database.postgres_db import engine
@@ -10,6 +13,7 @@ router = APIRouter(prefix="/predict", tags=["Prediction"])
 
 # Load trained pipeline (imputer + scaler + model)
 model = load_model()
+
 
 @router.post("/", response_model=PredictResponse)
 def predict_heart_disease(request: PredictRequest):
@@ -28,41 +32,17 @@ def predict_heart_disease(request: PredictRequest):
             })
             patient_id = result.scalar()
 
-            # === 2. INSERT HEALTH INDICATORS ===
-            conn.execute(text("""
-                INSERT INTO health_indicators 
-                (patient_id, bmi, smoker, phys_activity, fruits, veggies, hvy_alcohol_consump)
-                VALUES (:pid, :bmi, :smoker, :phys_activity, :fruits, :veggies, :hvy_alcohol_consump)
-            """), {
-                "pid": patient_id,
-                "bmi": request.health.bmi,
-                "smoker": request.health.smoker,
-                "phys_activity": request.health.phys_activity,
-                "fruits": request.health.fruits,
-                "veggies": request.health.veggies,
-                "hvy_alcohol_consump": request.health.hvy_alcohol_consump
-            })
+    # 2. Save health indicators
+    hi = HealthIndicator(
+        patient_id=patient.patient_id, **request.health.dict()
+    )
+    db.add(hi)
 
-            # === 3. INSERT MEDICAL HISTORY ===
-            conn.execute(text("""
-                INSERT INTO medical_history 
-                (patient_id, high_bp, chol_check, stroke, diabetes,
-                 any_healthcare, no_docbc_cost, gen_hlth, ment_hlth, phys_hlth, diff_walk)
-                VALUES (:pid, :high_bp, :chol_check, :stroke, :diabetes,
-                        :any_healthcare, :no_docbc_cost, :gen_hlth, :ment_hlth, :phys_hlth, :diff_walk)
-            """), {
-                "pid": patient_id,
-                "high_bp": request.medical.high_bp,
-                "chol_check": request.medical.chol_check,
-                "stroke": request.medical.stroke,
-                "diabetes": request.medical.diabetes,
-                "any_healthcare": request.medical.any_healthcare,
-                "no_docbc_cost": request.medical.no_docbc_cost,
-                "gen_hlth": request.medical.gen_hlth,
-                "ment_hlth": request.medical.ment_hlth,
-                "phys_hlth": request.medical.phys_hlth,
-                "diff_walk": request.medical.diff_walk
-            })
+    # 3. Save medical history
+    mh = MedicalHistory(
+        patient_id=patient.patient_id, **request.medical.dict()
+    )
+    db.add(mh)
 
             # === 4. BUILD FEATURE DICT ===
             feature_dict = {
@@ -86,34 +66,8 @@ def predict_heart_disease(request: PredictRequest):
             # === 5. CREATE DATAFRAME WITH EXACT ORDER ===
             df = pd.DataFrame([feature_dict])
 
-            # Reorder columns to match training
-            feature_order = [
-                'HighBP','CholCheck','BMI','Smoker','Stroke','Diabetes',
-                'PhysActivity','Fruits','Veggies','HvyAlcoholConsump',
-                'AnyHealthcare','NoDocbcCost','GenHlth','MentHlth','PhysHlth',
-                'DiffWalk','Sex','Age','Education','Income'
-            ]
-            X = df.reindex(columns=feature_order, fill_value=0)
-
-            # === 6. PREDICT USING FULL PIPELINE (SCALED!) ===
-            prob = float(model.predict_proba(X)[0][1])
-            pred = int(prob >= 0.5)
-
-            # === 7. SAVE PREDICTION ===
-            conn.execute(text("""
-                INSERT INTO predictions (patient_id, probability, prediction)
-                VALUES (:pid, :prob, :pred)
-            """), {"pid": patient_id, "prob": round(prob, 4), "pred": pred})
-
-            # === 8. HUMAN MESSAGE ===
-            message = "This person has a heart problem." if pred == 1 else "This person does not have a heart problem."
-
-            return PredictResponse(
-                patient_id=patient_id,
-                probability=round(prob, 4),
-                prediction=pred,
-                message=message
-            )
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+    return PredictResponse(
+        patient_id=patient.patient_id,
+        probability=round(float(prob), 4),
+        prediction=pred
+    )

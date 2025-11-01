@@ -1,5 +1,6 @@
 # schemas/health_indicator_schema.py
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
+
 
 
 class HealthIndicatorBase(BaseModel):
@@ -8,8 +9,12 @@ class HealthIndicatorBase(BaseModel):
     fruits: float
     veggies: float
     hvy_alcohol_consump: float
+    bmi: float
 
-    @validator("smoker", "phys_activity", "fruits", "veggies", "hvy_alcohol_consump")
+    @field_validator(
+        "smoker", "phys_activity", "fruits", "veggies", "hvy_alcohol_consump", "bmi"
+    )
+    @classmethod
     def validate_booleanish(cls, v):
         """Ensure value is either 0 or 1 (int or float)"""
         if v not in [0, 1, 0.0, 1.0]:

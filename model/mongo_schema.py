@@ -20,6 +20,19 @@ class PyObjectId(ObjectId):
         field_schema.update(type="string")
 
 
+class Patient(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id")
+    sex: float
+    age: float
+    education: float
+    income: float
+
+    class Config:
+        json_encoders = {ObjectId: str}
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+
+
 class HealthIndicator(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id")
     patient_id: str

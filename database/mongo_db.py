@@ -1,12 +1,14 @@
 # app/database/mongo.py
-from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo import ASCENDING
+from pymongo import MongoClient
 import os
+from dotenv import load_dotenv
 
-MONGO_URI = os.getenv("MONGO_URI", "your_mongodb_connection_string_here")
+load_dotenv()
 
-client = AsyncIOMotorClient(MONGO_URI)
-db = client["heart_health_db"]
+MONGO_URI = os.getenv("MONGO_DATABASE_URL")
+
+client = MongoClient(MONGO_URI)
+db = client["heart_disease_dataset"]
 
 # collections
 patients_collection = db["patients"]
