@@ -107,3 +107,10 @@ def create_medical_history(db: Session, patient_id: int, data: dict):
     db.refresh(medical_history)
     return medical_history
 
+
+def get_medical_history(db: Session, patient_id: int):
+    """Retrieve all medical history records for a given patient."""
+    histories = db.query(MedicalHistory).filter(MedicalHistory.patient_id == patient_id).all()
+    if not histories:
+        raise HTTPException(status_code=404, detail=f"No medical history found for patient ID {patient_id}")
+    return histories
