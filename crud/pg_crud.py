@@ -46,6 +46,11 @@ def delete_patient(db: Session, patient_id: int):
     return {"message": f"Patient ID {patient_id} deleted successfully"}
 
 
+# get all patients with limit
+def get_all_patients_with_limit(db: Session, limit: int):
+    """Get all patient records with limit."""
+    return db.query(Patient).limit(limit).all()
+
 def create_health_indicator(db: Session, patient_id: int, data: dict):
     """Create a health indicator for a given patient."""
     # Check if patient exists
@@ -102,6 +107,11 @@ def delete_health_indicator(db: Session, indicator_id: int):
     db.commit()
     return {"message": f"Health indicator ID {indicator_id} deleted successfully"}
 
+
+# get all health indicators with limit
+def get_all_health_indicators_with_limit(db: Session, limit: int):
+    """Get all health indicator records with limit."""
+    return db.query(HealthIndicator).limit(limit).all()
 
 #  Medical History CRUD operations
 def create_medical_history(db: Session, patient_id: int, data: dict):  
@@ -161,3 +171,8 @@ def delete_medical_history(db: Session, history_id: int):
     db.delete(history)
     db.commit()
     return {"message": f"Medical history ID {history_id} deleted successfully"}
+
+# get all medical histories with limit
+def get_all_medical_histories_with_limit(db: Session, limit: int):
+    """Get all medical history records with limit."""
+    return db.query(MedicalHistory).limit(limit).all()

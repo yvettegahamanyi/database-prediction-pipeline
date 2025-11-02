@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from database.postgres_db import get_db
 from crud.pg_crud import (
     create_patient as create_patient_crud,
-    get_patient as get_patient_crud,
     update_patient as update_patient_crud,
     create_health_indicator as create_indicator_crud,
     get_health_indicators as get_indicators_crud,
@@ -15,6 +14,9 @@ from crud.pg_crud import (
     delete_medical_history as delete_medical_history_crud,
     get_patient_by_id as get_patient_by_id_crud,
     delete_patient as delete_patient_crud,
+    get_all_patients_with_limit as get_all_patients_with_limit_crud,
+    get_all_health_indicators_with_limit as get_all_health_indicators_with_limit_crud,
+    get_all_medical_histories_with_limit as get_all_medical_histories_with_limit_crud,
 )
 from schemas.health_indicator_schema import (
     HealthIndicatorBase,
@@ -42,7 +44,7 @@ async def create_patient(patient: PatientBase, db: Session = Depends(get_db)):
 
 @router.get("/patients/{patient_id}")
 async def get_patient(patient_id: int, db: Session = Depends(get_db)):
-    return get_patient_crud(db, patient_id)
+    return get_patient_by_id_crud(db, patient_id)
 
 
 @router.put("/patients/{patient_id}")
@@ -51,16 +53,15 @@ async def update_patient(
 ):
     return update_patient_crud(db, patient_id, patient.dict())
 
-
-# get patient by id
-@router.get("/patients/{patient_id}")
-async def get_patient_by_id(patient_id: int, db: Session = Depends(get_db)):
-    return get_patient_by_id_crud(db, patient_id)
-
 # delete patient
 @router.delete("/patients/{patient_id}")
 async def delete_patient(patient_id: int, db: Session = Depends(get_db)):
     return delete_patient_crud(db, patient_id)
+
+# get all patients with limit
+@router.get("/patients/limit/{limit}")
+async def get_all_patients_with_limit(limit: int, db: Session = Depends(get_db)):
+    return get_all_patients_with_limit_crud(db, limit)
 
 
 @router.post("/health-indicators/{patient_id}")
@@ -98,6 +99,10 @@ async def delete_health_indicator(
     """Delete a specific health indicator."""
     return delete_indicator_crud(db, indicator_id)
 
+# get all health indicators with limit
+@router.get("/health-indicators/limit/{limit}")
+async def get_all_health_indicators_with_limit(limit: int, db: Session = Depends(get_db)):
+    return get_all_health_indicators_with_limit_crud(db, limit)
 
 # medical history endpoints
 
@@ -136,3 +141,8 @@ async def delete_medical_history(
 ):
     """Delete a specific medical history record."""
     return delete_medical_history_crud(db, history_id)
+
+# get all medical histories with limit
+@router.get("/medical-history/limit/{limit}")
+async def get_all_medical_histories_with_limit(limit: int, db: Session = Depends(get_db)):
+    return get_all_medical_histories_with_limit_crud(db, limit)
