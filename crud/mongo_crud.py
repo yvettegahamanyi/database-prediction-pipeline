@@ -53,11 +53,12 @@ def get_patient(patient_id: str):
             detail=f"MongoDB connection failed: {str(e)}"
         )
 
-
-def get_patient_by_id(patient_id: str):
-    patient = patients_collection.find_one({"_id": ObjectId(patient_id)})
-    return convert_objectid_to_str(patient)
-
+# update patient
+def update_patient(patient_id: str, update_data: dict):
+    patients_collection.update_one(
+        {"_id": ObjectId(patient_id)}, {"$set": update_data}
+    )
+    return get_patient(patient_id)
 
 def delete_patient(patient_id: str):
     patients_collection.delete_one({"_id": ObjectId(patient_id)})
