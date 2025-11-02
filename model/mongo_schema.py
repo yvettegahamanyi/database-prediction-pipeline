@@ -56,12 +56,6 @@ class MedicalHistory(BaseModel):
     stroke: float
     heart_disease: float
     diabetes: float
-    any_healthcare: float
-    no_docbc_cost: float
-    gen_hlth: float
-    ment_hlth: float
-    phys_hlth: float
-    diff_walk: float
 
     class Config:
         json_encoders = {ObjectId: str}

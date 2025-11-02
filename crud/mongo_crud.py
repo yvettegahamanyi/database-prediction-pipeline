@@ -8,7 +8,7 @@ from pymongo.errors import ServerSelectionTimeoutError, ConnectionFailure
 from fastapi import HTTPException
 
 
-# 🧍 Patients CRUD
+#  Patients CRUD
 def create_patient(patient: dict):
     try:
         result = patients_collection.insert_one(patient)
@@ -47,7 +47,7 @@ def delete_patient(patient_id: str):
     return True
 
 
-# 🧾 HealthIndicators CRUD
+#  HealthIndicators CRUD
 def create_health_indicator(indicator: dict):
     result = health_indicators_collection.insert_one(indicator)
     return str(result.inserted_id)
@@ -72,17 +72,9 @@ def delete_health_indicator(indicator_id: str):
 
 # MedicalHistory CRUD
 
-
 def create_medical_history(history: dict):
-    try:
-        result = medical_history_collection.insert_one(history)
-        return str(result.inserted_id)
-    except (ServerSelectionTimeoutError, ConnectionFailure) as e:
-        raise HTTPException(
-            status_code=503,
-            detail=f"MongoDB connection failed: {str(e)}. "
-                   "Please check your MongoDB connection string and network."
-        )  
+    result = medical_history_collection.insert_one(history)
+    return str(result.inserted_id)  
 
 def get_medical_history(history_id: str):
     return medical_history_collection.find_one({"_id": ObjectId(history_id)})

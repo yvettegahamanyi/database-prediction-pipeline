@@ -62,3 +62,4 @@ except Exception as e:
 patients_collection = db["patients"]
 health_indicators_collection = db["health_indicators"]
 predictions_collection = db["predictions"]
+medical_history_collection = db["medical_history"]
