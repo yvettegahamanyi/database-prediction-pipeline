@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from model.models import Patient, HealthIndicator
+from model.models import Patient, HealthIndicator, MedicalHistory
 
 # add apis for patients
 def create_patient(db: Session, data: dict):
@@ -83,3 +83,63 @@ def delete_health_indicator(db: Session, indicator_id: int):
     db.delete(indicator)
     db.commit()
     return {"message": f"Health indicator ID {indicator_id} deleted successfully"}
+
+
+#  Medical History CRUD operations
+def create_medical_history(db: Session, patient_id: int, data: dict):  
+    """Create a medical history for a given patient."""
+    # Check if patient exists
+    patient = db.query(Patient).filter(Patient.patient_id == patient_id).first()
+    if not patient:
+        raise HTTPException(status_code=404, detail=f"Patient with ID {patient_id} not found")
+
+    medical_history = MedicalHistory(
+        patient_id=patient_id,
+        heart_disease_or_attack=data.get("heart_disease_or_attack"),
+        high_bp=data.get("high_bp"),
+        chol_check=data.get("chol_check"),
+        stroke=data.get("stroke"),
+        diabetes=data.get("diabetes"),
+        any_healthcare=data.get("any_healthcare"),
+        no_docbc_cost=data.get("no_docbc_cost"),
+        gen_hlth=data.get("gen_hlth"),
+        ment_hlth=data.get("ment_hlth"),
+        phys_hlth=data.get("phys_hlth"),
+        diff_walk=data.get("diff_walk"),
+    )
+
+    db.add(medical_history)
+    db.commit()
+    db.refresh(medical_history)
+    return medical_history
+
+
+def get_medical_history(db: Session, patient_id: int):
+    """Retrieve all medical history records for a given patient."""
+    histories = db.query(MedicalHistory).filter(MedicalHistory.patient_id == patient_id).all()
+    if not histories:
+        raise HTTPException(status_code=404, detail=f"No medical history found for patient ID {patient_id}")
+    return histories
+
+
+def update_medical_history(db: Session, history_id: int, data: dict):
+    """Update a medical history record."""
+    history = db.query(MedicalHistory).filter(MedicalHistory.history_id == history_id).first()
+    if not history:
+        raise HTTPException(status_code=404, detail=f"Medical history with ID {history_id} not found")  
+    for key, value in data.items():
+        if hasattr(history, key):
+            setattr(history, key, value)    
+    db.commit()
+    db.refresh(history)
+    return history
+
+
+def delete_medical_history(db: Session, history_id: int):
+    """Delete a medical history record."""
+    history = db.query(MedicalHistory).filter(MedicalHistory.history_id == history_id).first()
+    if not history:
+        raise HTTPException(status_code=404, detail=f"Medical history with ID {history_id} not found")  
+    db.delete(history)
+    db.commit()
+    return {"message": f"Medical history ID {history_id} deleted successfully"}

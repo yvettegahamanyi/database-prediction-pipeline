@@ -3,16 +3,15 @@ from sqlalchemy import Column, Integer, Float, ForeignKey, DateTime, func
 from database.postgres_db import Base
 
 class Patient(Base):
-    __tablename__ = "patients"
+    _tablename_ = "patients"
     patient_id = Column(Integer, primary_key=True)
     sex = Column(Float)
     age = Column(Float)
     education = Column(Float)
     income = Column(Float)
-    bmi = Column(Float)
 
 class HealthIndicator(Base):
-    __tablename__ = "health_indicators"
+    _tablename_ = "health_indicators"
     indicator_id = Column(Integer, primary_key=True)
     patient_id = Column(Integer, ForeignKey("patients.patient_id"))
     bmi = Column(Float)
@@ -23,23 +22,23 @@ class HealthIndicator(Base):
     hvy_alcohol_consump = Column(Integer)
 
 class MedicalHistory(Base):
-    __tablename__ = "medical_history"
+    _tablename_ = "medical_history"
     history_id = Column(Integer, primary_key=True)
     patient_id = Column(Integer, ForeignKey("patients.patient_id"))
-    heart_disease_or_attack = Column(Integer)
-    high_bp = Column(Integer)
-    chol_check = Column(Integer)
-    stroke = Column(Integer)
-    diabetes = Column(Integer)
-    any_healthcare = Column(Integer)
-    no_docbc_cost = Column(Integer)
-    gen_hlth = Column(Integer)
-    ment_hlth = Column(Integer)
-    phys_hlth = Column(Integer)
-    diff_walk = Column(Integer)
+    heart_disease_or_attack = Column(Float, nullable=True)
+    high_bp = Column(Float)
+    chol_check = Column(Float)
+    stroke = Column(Float)
+    diabetes = Column(Float)
+    any_healthcare = Column(Float)
+    no_docbc_cost = Column(Float)
+    gen_hlth = Column(Float)
+    ment_hlth = Column(Float)
+    phys_hlth = Column(Float)
+    diff_walk = Column(Float)
 
 class Prediction(Base):
-    __tablename__ = "predictions"
+    _tablename_ = "predictions"
     id = Column(Integer, primary_key=True)
     patient_id = Column(Integer, ForeignKey("patients.patient_id"))
     probability = Column(Float)
