@@ -11,6 +11,9 @@ from crud.mongo_crud import (
     delete_medical_history as delete_medical_history_crud,
     get_health_indicator as get_health_indicator_crud,
     delete_health_indicator as delete_health_indicator_crud,
+    get_all_patients as get_all_patients_crud,
+    delete_patient as delete_patient_crud,
+    update_patient as update_patient_crud,
 )
 from schemas.patient_schema import PatientBase
 from schemas.health_indicator_schema import HealthIndicatorBase
@@ -32,6 +35,26 @@ def get_patient(patient_id: str):
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     return patient
+
+# get all patients
+@router.get("/patients")
+def get_all_patients():
+    patients = get_all_patients_crud()
+    return patients
+
+# update patient
+@router.put("/patients/{patient_id}")
+def update_patient(patient_id: str, patient: PatientBase):
+    updated = update_patient_crud(patient_id, patient.dict(exclude_unset=True))
+    return updated
+
+# delete patient
+@router.delete("/patients/{patient_id}")
+def delete_patient(patient_id: str):
+    success = delete_patient_crud(patient_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    return {"message": "Patient deleted successfully"}
 
 
 # Health Indicators

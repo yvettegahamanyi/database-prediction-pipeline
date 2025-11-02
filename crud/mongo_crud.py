@@ -54,6 +54,16 @@ def get_patient(patient_id: str):
         )
 
 
+def get_patient_by_id(patient_id: str):
+    patient = patients_collection.find_one({"_id": ObjectId(patient_id)})
+    return convert_objectid_to_str(patient)
+
+
+def delete_patient(patient_id: str):
+    patients_collection.delete_one({"_id": ObjectId(patient_id)})
+    return True
+
+
 def get_all_patients():
     patients = list(patients_collection.find())
     return convert_objectid_to_str(patients)

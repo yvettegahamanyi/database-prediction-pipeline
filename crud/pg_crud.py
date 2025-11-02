@@ -27,6 +27,24 @@ def update_patient(db: Session, patient_id: int, data: dict):
     db.refresh(patient)
     return patient
 
+# get patient by id and delete patient
+def get_patient_by_id(db: Session, patient_id: int):
+    """Get a patient record by ID."""
+    patient = db.query(Patient).filter(Patient.patient_id == patient_id).first()
+    if not patient:
+        raise HTTPException(status_code=404, detail=f"Patient with ID {patient_id} not found")
+    return patient
+
+
+def delete_patient(db: Session, patient_id: int):
+    """Delete a patient record."""
+    patient = db.query(Patient).filter(Patient.patient_id == patient_id).first()
+    if not patient:
+        raise HTTPException(status_code=404, detail=f"Patient with ID {patient_id} not found")
+    db.delete(patient)
+    db.commit()
+    return {"message": f"Patient ID {patient_id} deleted successfully"}
+
 
 def create_health_indicator(db: Session, patient_id: int, data: dict):
     """Create a health indicator for a given patient."""

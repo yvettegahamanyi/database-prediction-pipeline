@@ -13,6 +13,8 @@ from crud.pg_crud import (
     get_medical_history as get_medical_history_crud,
     update_medical_history as update_medical_history_crud,
     delete_medical_history as delete_medical_history_crud,
+    get_patient_by_id as get_patient_by_id_crud,
+    delete_patient as delete_patient_crud,
 )
 from schemas.health_indicator_schema import (
     HealthIndicatorBase,
@@ -48,6 +50,17 @@ async def update_patient(
     patient_id: int, patient: PatientBase, db: Session = Depends(get_db)
 ):
     return update_patient_crud(db, patient_id, patient.dict())
+
+
+# get patient by id
+@router.get("/patients/{patient_id}")
+async def get_patient_by_id(patient_id: int, db: Session = Depends(get_db)):
+    return get_patient_by_id_crud(db, patient_id)
+
+# delete patient
+@router.delete("/patients/{patient_id}")
+async def delete_patient(patient_id: int, db: Session = Depends(get_db)):
+    return delete_patient_crud(db, patient_id)
 
 
 @router.post("/health-indicators/{patient_id}")
