@@ -3,6 +3,8 @@ from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import os
 from dotenv import load_dotenv
+import certifi
+
 
 load_dotenv()
 
@@ -22,6 +24,7 @@ try:
     # Remove server_api parameter if it causes SSL issues
     client = MongoClient(
         MONGO_URI,
+        tlsCAFile=certifi.where(),
         server_api=ServerApi('1'),
         serverSelectionTimeoutMS=20000,  # 20 second timeout
         connectTimeoutMS=20000,
