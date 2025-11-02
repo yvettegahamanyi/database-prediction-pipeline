@@ -9,6 +9,8 @@ from crud.mongo_crud import (
     get_all_medical_histories as get_all_medical_histories_crud,
     update_medical_history as update_medical_history_crud,
     delete_medical_history as delete_medical_history_crud,
+    get_health_indicator as get_health_indicator_crud,
+    delete_health_indicator as delete_health_indicator_crud,
 )
 from schemas.patient_schema import PatientBase
 from schemas.health_indicator_schema import HealthIndicatorBase
@@ -33,9 +35,9 @@ def get_patient(patient_id: str):
 
 
 # Health Indicators
-@router.post("/health-indicators")
-def create_health_indicator(indicator: HealthIndicatorBase):
-    new_id = create_health_indicator_crud(indicator.dict(exclude_unset=True))
+@router.post("/health-indicators/{patient_id}")
+def create_health_indicator(patient_id: str, indicator: HealthIndicatorBase):
+    new_id = create_health_indicator_crud(patient_id, indicator.dict(exclude_unset=True))
     return {"_id": new_id}
 
 
@@ -46,12 +48,26 @@ def update_health_indicator(indicator_id: str, indicator: HealthIndicatorBase):
     )
     return updated
 
+# add route to get by Id and delete health indicator
+@router.get("/health-indicators/{indicator_id}")
+def get_health_indicator(indicator_id: str):
+    indicator = get_health_indicator_crud(indicator_id)
+    if not indicator:
+        raise HTTPException(status_code=404, detail="Health indicator not found")
+    return indicator
+
+@router.delete("/health-indicators/{indicator_id}")
+def delete_health_indicator(indicator_id: str):
+    success = delete_health_indicator_crud(indicator_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Health indicator not found")
+    return {"message": "Health indicator deleted successfully"}
 
 # medical history routes
 
-@router.post("/medical-history")
-def create_medical_history(history: MedicalHistoryBase):
-    new_id = create_medical_history_crud(history)
+@router.post("/medical-history/{patient_id}")
+def create_medical_history(patient_id: str, history: MedicalHistoryBase):
+    new_id = create_medical_history_crud(patient_id, history.dict(exclude_unset=True))
     return {"_id": new_id}      
 
 @router.get("/medical-history/{history_id}")
@@ -67,9 +83,9 @@ def get_all_medical_histories():
     return histories
 
 @router.put("/medical-history/{history_id}")
-def update_medical_history(history_id: str, history: MedicalHistoryBase): 
+def update_medical_history(history_id: str, history: MedicalHistoryBase):
     updated = update_medical_history_crud(
-        history_id, history
+        history_id, history.dict(exclude_unset=True)
     )
     return updated  
 

@@ -2,7 +2,7 @@ from pydantic import BaseModel, field_validator
 
 
 class MedicalHistoryBase(BaseModel):
-    patient_id: int
+    # patient_id: int
     heart_disease_or_attack: float
     high_bp: float
     chol_check: float

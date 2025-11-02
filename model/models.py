@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, Float, ForeignKey, DateTime, func
 from database.postgres_db import Base
 
 class Patient(Base):
-    _tablename_ = "patients"
+    __tablename__ = "patients"
     patient_id = Column(Integer, primary_key=True)
     sex = Column(Float)
     age = Column(Float)
@@ -11,7 +11,7 @@ class Patient(Base):
     income = Column(Float)
 
 class HealthIndicator(Base):
-    _tablename_ = "health_indicators"
+    __tablename__ = "health_indicators"
     indicator_id = Column(Integer, primary_key=True)
     patient_id = Column(Integer, ForeignKey("patients.patient_id"))
     bmi = Column(Float)
@@ -22,7 +22,7 @@ class HealthIndicator(Base):
     hvy_alcohol_consump = Column(Integer)
 
 class MedicalHistory(Base):
-    _tablename_ = "medical_history"
+    __tablename__ = "medical_history"
     history_id = Column(Integer, primary_key=True)
     patient_id = Column(Integer, ForeignKey("patients.patient_id"))
     heart_disease_or_attack = Column(Float, nullable=True)
@@ -38,7 +38,7 @@ class MedicalHistory(Base):
     diff_walk = Column(Float)
 
 class Prediction(Base):
-    _tablename_ = "predictions"
+    __tablename__ = "predictions"
     id = Column(Integer, primary_key=True)
     patient_id = Column(Integer, ForeignKey("patients.patient_id"))
     probability = Column(Float)
