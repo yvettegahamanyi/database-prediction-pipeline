@@ -46,3 +46,24 @@ class HealthIndicator(BaseModel):
         json_encoders = {ObjectId: str}
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+
+
+class MedicalHistory(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id")
+    patient_id: str
+    high_bp: float
+    high_chol: float
+    stroke: float
+    heart_disease: float
+    diabetes: float
+    any_healthcare: float
+    no_docbc_cost: float
+    gen_hlth: float
+    ment_hlth: float
+    phys_hlth: float
+    diff_walk: float
+
+    class Config:
+        json_encoders = {ObjectId: str}
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True

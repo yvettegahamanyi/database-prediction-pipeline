@@ -1,18 +1,34 @@
 from database.mongo_db import (
     patients_collection,
     health_indicators_collection,
+    medical_history_collection,
 )
 from bson import ObjectId
+from pymongo.errors import ServerSelectionTimeoutError, ConnectionFailure
+from fastapi import HTTPException
 
 
 # 🧍 Patients CRUD
 def create_patient(patient: dict):
-    result = patients_collection.insert_one(patient)
-    return str(result.inserted_id)
+    try:
+        result = patients_collection.insert_one(patient)
+        return str(result.inserted_id)
+    except (ServerSelectionTimeoutError, ConnectionFailure) as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"MongoDB connection failed: {str(e)}. "
+                   "Please check your MongoDB connection string and network."
+        )
 
 
 def get_patient(patient_id: str):
-    return patients_collection.find_one({"_id": ObjectId(patient_id)})
+    try:
+        return patients_collection.find_one({"_id": ObjectId(patient_id)})
+    except (ServerSelectionTimeoutError, ConnectionFailure) as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"MongoDB connection failed: {str(e)}"
+        )
 
 
 def get_all_patients():
@@ -53,3 +69,34 @@ def update_health_indicator(indicator_id: str, update_data: dict):
 def delete_health_indicator(indicator_id: str):
     health_indicators_collection.delete_one({"_id": ObjectId(indicator_id)})
     return True
+
+# MedicalHistory CRUD
+
+
+def create_medical_history(history: dict):
+    try:
+        result = medical_history_collection.insert_one(history)
+        return str(result.inserted_id)
+    except (ServerSelectionTimeoutError, ConnectionFailure) as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"MongoDB connection failed: {str(e)}. "
+                   "Please check your MongoDB connection string and network."
+        )  
+
+def get_medical_history(history_id: str):
+    return medical_history_collection.find_one({"_id": ObjectId(history_id)})
+
+def get_all_medical_histories():
+    return list(medical_history_collection.find())
+
+def update_medical_history(history_id: str, update_data: dict):
+    medical_history_collection.update_one(
+        {"_id": ObjectId(history_id)}, {"$set": update_data}
+    )
+    return get_medical_history(history_id)
+
+def delete_medical_history(history_id: str):
+    medical_history_collection.delete_one({"_id": ObjectId(history_id)})
+    return True
+

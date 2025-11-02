@@ -39,3 +39,38 @@ def update_health_indicator(indicator_id: str, indicator: HealthIndicatorBase):
         indicator_id, indicator.dict(exclude_unset=True)
     )
     return updated
+
+
+# medical history routes
+
+@router.post("/medical-history")
+def create_medical_history(history: MedicalHistoryBase):
+    new_id = create_medical_history_crud(history.dict(exclude_unset=True))
+    return {"_id": new_id}      
+
+@router.get("/medical-history/{history_id}")
+def get_medical_history(history_id: str):
+    history = get_medical_history_crud(history_id)
+    if not history:
+        raise HTTPException(status_code=404, detail="Medical history not found")
+    return history
+
+@router.get("/medical-history")
+def get_all_medical_histories():
+    histories = get_all_medical_histories_crud()
+    return histories
+
+@router.put("/medical-history/{history_id}")
+def update_medical_history(history_id: str, history: MedicalHistoryBase):
+    updated = update_medical_history_crud(
+        history_id, history.dict(exclude_unset=True)
+    )
+    return updated  
+
+
+@router.delete("/medical-history/{history_id}")
+def delete_medical_history(history_id: str):            
+    success = delete_medical_history_crud(history_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Medical history not found")
+    return {"message": "Medical history deleted successfully"}
