@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from crud.mongo_crud import (
     create_patient as create_patient_crud,
     get_patient as get_patient_crud,
+    get_all_health_indicators as get_all_health_indicators_crud,
     create_health_indicator as create_health_indicator_crud,
     update_health_indicator as update_health_indicator_crud,
     create_medical_history as create_medical_history_crud,
@@ -63,6 +64,11 @@ def create_health_indicator(patient_id: str, indicator: HealthIndicatorBase):
     new_id = create_health_indicator_crud(patient_id, indicator.dict(exclude_unset=True))
     return {"_id": new_id}
 
+# get all health indicators
+@router.get("/health-indicators")
+def get_all_health_indicators():
+    indicators = get_all_health_indicators_crud()
+    return indicators
 
 @router.put("/health-indicators/{indicator_id}")
 def update_health_indicator(indicator_id: str, indicator: HealthIndicatorBase):

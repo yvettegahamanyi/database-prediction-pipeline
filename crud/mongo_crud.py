@@ -115,7 +115,12 @@ def create_health_indicator(patient_id: str, indicator: dict):
                    "Please check your MongoDB connection string and network."
         )
 
+# get all health indicators
+def get_all_health_indicators():
+    indicators = list(health_indicators_collection.find())
+    return convert_objectid_to_str(indicators)
 
+# get a health indicator by id
 def get_health_indicator(indicator_id: str):
     indicator = health_indicators_collection.find_one(
         {"_id": ObjectId(indicator_id)}
