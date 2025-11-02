@@ -11,7 +11,6 @@ from crud.pg_crud import (
     delete_health_indicator as delete_indicator_crud,
     create_medical_history as create_medical_history_crud,
     get_medical_history as get_medical_history_crud,
-    get_all_medical_histories as get_all_medical_histories_crud,
     update_medical_history as update_medical_history_crud,
     delete_medical_history as delete_medical_history_crud,
 )
@@ -62,7 +61,9 @@ async def create_health_indicator(
 
 
 @router.get("/health-indicators/{patient_id}")
-async def get_health_indicators(patient_id: int, db: Session = Depends(get_db)):
+async def get_health_indicators(
+    patient_id: int, db: Session = Depends(get_db)
+):
     """Get all health indicators for a given patient."""
     return get_indicators_crud(db, patient_id)
 
@@ -84,21 +85,27 @@ async def delete_health_indicator(
     """Delete a specific health indicator."""
     return delete_indicator_crud(db, indicator_id)
 
+
 # medical history endpoints
 
+
 @router.post("/medical-history")
-async def create_medical_history(   
+async def create_medical_history(
     patient_id: int,
     data: MedicalHistoryBase,
     db: Session = Depends(get_db),
 ):
     """Create a medical history for a patient."""
-    return create_medical_history_crud(db, patient_id, data)
+    return create_medical_history_crud(db, patient_id, data.dict())
+
 
 @router.get("/medical-history/{patient_id}")
-async def get_medical_history(patient_id: int, db: Session = Depends(get_db)):  
+async def get_medical_history(
+    patient_id: int, db: Session = Depends(get_db)
+):
     """Get medical history for a given patient."""
-    return get_medical_history_crud(db, patient_id) 
+    return get_medical_history_crud(db, patient_id)
+
 
 @router.put("/medical-history/{history_id}")
 async def update_medical_history(
@@ -107,7 +114,7 @@ async def update_medical_history(
     db: Session = Depends(get_db),
 ):
     """Update a specific medical history record."""
-    return update_medical_history_crud(db, history_id, data)    
+    return update_medical_history_crud(db, history_id, data)
 
 
 @router.delete("/medical-history/{history_id}")

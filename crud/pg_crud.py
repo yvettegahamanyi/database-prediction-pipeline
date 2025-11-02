@@ -95,11 +95,17 @@ def create_medical_history(db: Session, patient_id: int, data: dict):
 
     medical_history = MedicalHistory(
         patient_id=patient_id,
+        heart_disease_or_attack=data.get("heart_disease_or_attack"),
         high_bp=data.get("high_bp"),
-        high_chol=data.get("high_chol"),
+        chol_check=data.get("chol_check"),
         stroke=data.get("stroke"),
-        heart_disease=data.get("heart_disease"),
-        diabetes=data.get("diabetes")
+        diabetes=data.get("diabetes"),
+        any_healthcare=data.get("any_healthcare"),
+        no_docbc_cost=data.get("no_docbc_cost"),
+        gen_hlth=data.get("gen_hlth"),
+        ment_hlth=data.get("ment_hlth"),
+        phys_hlth=data.get("phys_hlth"),
+        diff_walk=data.get("diff_walk"),
     )
 
     db.add(medical_history)
@@ -114,6 +120,7 @@ def get_medical_history(db: Session, patient_id: int):
     if not histories:
         raise HTTPException(status_code=404, detail=f"No medical history found for patient ID {patient_id}")
     return histories
+
 
 def update_medical_history(db: Session, history_id: int, data: dict):
     """Update a medical history record."""
