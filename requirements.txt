@@ -10,3 +10,4 @@ python-dotenv==1.0.1
 joblib==1.4.2
 pymongo==4.6.1
 certifi==2024.2.2
+imbalanced-learn==0.12.0
