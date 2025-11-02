@@ -1,18 +1,34 @@
 from database.mongo_db import (
     patients_collection,
     health_indicators_collection,
+    medical_history_collection,
 )
 from bson import ObjectId
+from pymongo.errors import ServerSelectionTimeoutError, ConnectionFailure
+from fastapi import HTTPException
 
 
 #  Patients CRUD
 def create_patient(patient: dict):
-    result = patients_collection.insert_one(patient)
-    return str(result.inserted_id)
+    try:
+        result = patients_collection.insert_one(patient)
+        return str(result.inserted_id)
+    except (ServerSelectionTimeoutError, ConnectionFailure) as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"MongoDB connection failed: {str(e)}. "
+                   "Please check your MongoDB connection string and network."
+        )
 
 
 def get_patient(patient_id: str):
-    return patients_collection.find_one({"_id": ObjectId(patient_id)})
+    try:
+        return patients_collection.find_one({"_id": ObjectId(patient_id)})
+    except (ServerSelectionTimeoutError, ConnectionFailure) as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"MongoDB connection failed: {str(e)}"
+        )
 
 
 def get_all_patients():

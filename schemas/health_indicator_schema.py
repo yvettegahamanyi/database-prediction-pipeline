@@ -12,7 +12,7 @@ class HealthIndicatorBase(BaseModel):
     bmi: float
 
     @field_validator(
-        "smoker", "phys_activity", "fruits", "veggies", "hvy_alcohol_consump", "bmi"
+        "smoker", "phys_activity", "fruits", "veggies", "hvy_alcohol_consump"
     )
     @classmethod
     def validate_booleanish(cls, v):
